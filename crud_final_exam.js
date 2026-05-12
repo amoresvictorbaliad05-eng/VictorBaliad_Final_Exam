@@ -92,6 +92,7 @@ app.get("/edit/:id", (req, res) => {
   );
 });
 
+
 app.put("/edit/:id", (req, res) => {
   const { student_id, full_name, course, year_level, email } = req.body;
 
@@ -133,4 +134,11 @@ const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+});
+
+app.get("/db", (req, res) => {
+  db.query("SELECT * FROM students", (err, results) => {
+    if (err) throw err;
+    res.json(results);
+  });
 });
