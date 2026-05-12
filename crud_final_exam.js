@@ -1,8 +1,9 @@
+require("dotenv").config();
+
 const express = require("express");
 const mysql = require("mysql2");
 const bodyParser = require("body-parser");
 const methodOverride = require("method-override");
-require("dotenv").config();
 
 const app = express();
 
@@ -12,27 +13,25 @@ app.use(express.static("public"));
 
 app.set("view engine", "ejs");
 
+
+// ================= DATABASE =================
 const db = mysql.createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   port: process.env.DB_PORT,
-  ssl: {
-    rejectUnauthorized: false
-  }
+  ssl: { rejectUnauthorized: false }
 });
 
 db.connect((err) => {
-  if (err) {
-    console.log("Database connection failed");
-    console.log(err);
-  } else {
-    console.log("Connected to Aiven MySQL");
-  }
+  if (err) console.log(err);
+  else console.log("Connected to Aiven MySQL");
 });
 
-const createTable = `
+
+// ================= TABLE =================
+db.query(`
 CREATE TABLE IF NOT EXISTS students (
   id INT AUTO_INCREMENT PRIMARY KEY,
   student_id VARCHAR(50),
@@ -41,17 +40,17 @@ CREATE TABLE IF NOT EXISTS students (
   year_level VARCHAR(20),
   email VARCHAR(100)
 )
-`;
+`);
 
-db.query(createTable, (err) => {
-  if (err) {
-    console.log(err);
-  } else {
-    console.log("Students table ready");
-  }
+
+// ================= ROUTES =================
+
+// HOME (DEFAULT)
+app.get("/", (req, res) => {
+  res.render("home");
 });
 
-app.get("/", (req, res) => {
+app.get("/students", (req, res) => {
   db.query("SELECT * FROM students", (err, results) => {
     if (err) throw err;
     res.render("index", { students: results });
@@ -65,89 +64,37 @@ app.get("/add", (req, res) => {
 app.post("/add", (req, res) => {
   const { student_id, full_name, course, year_level, email } = req.body;
 
-  const sql = `
-    INSERT INTO students 
-    (student_id, full_name, course, year_level, email)
-    VALUES (?, ?, ?, ?, ?)
-  `;
-
   db.query(
-    sql,
+    "INSERT INTO students VALUES (NULL,?,?,?,?,?)",
     [student_id, full_name, course, year_level, email],
-    (err) => {
-      if (err) throw err;
-      res.redirect("/");
-    }
+    () => res.redirect("/students")
   );
 });
 
 app.get("/edit/:id", (req, res) => {
-  db.query(
-    "SELECT * FROM students WHERE id = ?",
-    [req.params.id],
-    (err, results) => {
-      if (err) throw err;
-      res.render("edit", { student: results[0] });
-    }
-  );
+  db.query("SELECT * FROM students WHERE id=?", [req.params.id], (err, result) => {
+    res.render("edit", { student: result[0] });
+  });
 });
-
-app.get("/home", (req, res) => {
-  res.render("home");
-});
-
 
 app.put("/edit/:id", (req, res) => {
   const { student_id, full_name, course, year_level, email } = req.body;
 
-  const sql = `
-    UPDATE students
-    SET student_id=?, full_name=?, course=?, year_level=?, email=?
-    WHERE id=?
-  `;
-
   db.query(
-    sql,
-    [
-      student_id,
-      full_name,
-      course,
-      year_level,
-      email,
-      req.params.id
-    ],
-    (err) => {
-      if (err) throw err;
-      res.redirect("/");
-    }
+    `UPDATE students SET student_id=?, full_name=?, course=?, year_level=?, email=? WHERE id=?`,
+    [student_id, full_name, course, year_level, email, req.params.id],
+    () => res.redirect("/students")
   );
 });
 
 app.delete("/delete/:id", (req, res) => {
-  db.query(
-    "DELETE FROM students WHERE id=?",
-    [req.params.id],
-    (err) => {
-      if (err) throw err;
-      res.redirect("/");
-    }
-  );
-});
-
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-
-app.get("/students-data", (req, res) => {
-  db.query("SELECT * FROM students", (err, results) => {
-    if (err) return res.send("Error loading data");
-
-    let html = "<h1>Database Records</h1><pre>";
-    html += JSON.stringify(results, null, 2);
-    html += "</pre>";
-
-    res.send(html);
+  db.query("DELETE FROM students WHERE id=?", [req.params.id], () => {
+    res.redirect("/students");
   });
+});
+
+
+// ================= SERVER =================
+app.listen(3000, () => {
+  console.log("Server running on port 3000");
 });
