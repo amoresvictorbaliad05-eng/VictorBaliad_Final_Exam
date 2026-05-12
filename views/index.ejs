@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student Management System</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<h1>Student Information Management System</h1>
+
+<a href="/add">Add Student</a>
+
+<table>
+  <tr>
+    <th>ID</th>
+    <th>Student ID</th>
+    <th>Name</th>
+    <th>Course</th>
+    <th>Year</th>
+    <th>Email</th>
+    <th>Actions</th>
+  </tr>
+
+  <% students.forEach(student => { %>
+    <tr>
+      <td><%= student.id %></td>
+      <td><%= student.student_id %></td>
+      <td><%= student.full_name %></td>
+      <td><%= student.course %></td>
+      <td><%= student.year_level %></td>
+      <td><%= student.email %></td>
+
+      <td>
+        <a href="/edit/<%= student.id %>">Edit</a>
+
+        <form
+          action="/delete/<%= student.id %>?_method=DELETE"
+          method="POST"
+          style="display:inline;"
+        >
+          <button type="submit">Delete</button>
+        </form>
+      </td>
+    </tr>
+  <% }) %>
+
+</table>
+
+</body>
+</html>

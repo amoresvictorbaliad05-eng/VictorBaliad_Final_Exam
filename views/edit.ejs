@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Edit Student</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<h1>Edit Student</h1>
+
+<form action="/edit/<%= student.id %>?_method=PUT" method="POST">
+
+  <input
+    type="text"
+    name="student_id"
+    value="<%= student.student_id %>"
+    required
+  >
+
+  <input
+    type="text"
+    name="full_name"
+    value="<%= student.full_name %>"
+    required
+  >
+
+  <input
+    type="text"
+    name="course"
+    value="<%= student.course %>"
+    required
+  >
+
+  <input
+    type="text"
+    name="year_level"
+    value="<%= student.year_level %>"
+    required
+  >
+
+  <input
+    type="email"
+    name="email"
+    value="<%= student.email %>"
+    required
+  >
+
+  <button type="submit">Update</button>
+
+</form>
+
+<a href="/">Back</a>
+
+</body>
+</html>
