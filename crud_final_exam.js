@@ -92,6 +92,10 @@ app.get("/edit/:id", (req, res) => {
   );
 });
 
+app.get("/home", (req, res) => {
+  res.render("home");
+});
+
 
 app.put("/edit/:id", (req, res) => {
   const { student_id, full_name, course, year_level, email } = req.body;
@@ -136,9 +140,14 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-app.get("/db", (req, res) => {
+app.get("/students-data", (req, res) => {
   db.query("SELECT * FROM students", (err, results) => {
-    if (err) throw err;
-    res.json(results);
+    if (err) return res.send("Error loading data");
+
+    let html = "<h1>Database Records</h1><pre>";
+    html += JSON.stringify(results, null, 2);
+    html += "</pre>";
+
+    res.send(html);
   });
 });
