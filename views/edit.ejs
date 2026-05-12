@@ -8,6 +8,8 @@
 
 <h1>Edit Student</h1>
 
+<div class="form-container">
+
 <form action="/edit/<%= student.id %>?_method=PUT" method="POST">
 
   <input
@@ -45,11 +47,12 @@
     required
   >
 
-  <button type="submit">Update</button>
+  <button type="submit">Update Student</button>
 
 </form>
 
-<a href="/">Back</a>
+<a href="/" class="back-btn">← Back</a>
 
+</div>
 </body>
 </html>

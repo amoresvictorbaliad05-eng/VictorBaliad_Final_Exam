@@ -8,7 +8,7 @@
 
 <h1>Student Information Management System</h1>
 
-<a href="/add">Add Student</a>
+<a href="/add" class="top-btn">+ Add Student</a>
 
 <table>
   <tr>
@@ -30,7 +30,7 @@
       <td><%= student.year_level %></td>
       <td><%= student.email %></td>
 
-      <td>
+      <td class="action-buttons">
         <a href="/edit/<%= student.id %>">Edit</a>
 
         <form
